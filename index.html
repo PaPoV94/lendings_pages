@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WasherLevel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap&subset=cyrillic">
+<style>
+  :root {
+    --bg: #F5F3EC;
+    --panel: #FFFFFF;
+    --panel-border: #DBD5C6;
+    --ink: #1C1E22;
+    --ink-soft: #5B6472;
+    --accent: #D98A0E;
+    --accent-ink: #4A2E02;
+    --accent-2: #2E6690;
+    --rule: #CFC9B8;
+    --good: #2E7D4F;
+    --bad: #B0421F;
+    --track: #E7E2D4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171C;
+      --panel: #1C2027;
+      --panel-border: #2C323C;
+      --ink: #ECEAE4;
+      --ink-soft: #9AA3AF;
+      --accent: #F2A71B;
+      --accent-ink: #1C1400;
+      --accent-2: #6FB2E0;
+      --rule: #333A45;
+      --good: #58C487;
+      --bad: #E27352;
+      --track: #262B33;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171C;
+    --panel: #1C2027;
+    --panel-border: #2C323C;
+    --ink: #ECEAE4;
+    --ink-soft: #9AA3AF;
+    --accent: #F2A71B;
+    --accent-ink: #1C1400;
+    --accent-2: #6FB2E0;
+    --rule: #333A45;
+    --good: #58C487;
+    --bad: #E27352;
+    --track: #262B33;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+    padding: 0 20px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  h1, h2, h3, .display {
+    font-family: "Oswald", "Arial Narrow", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    color: var(--ink);
+    margin: 0;
+  }
+  .mono, .price, input[type="number"] {
+    font-family: "IBM Plex Mono", "Consolas", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  p { color: var(--ink-soft); margin: 10px 0 0; }
+  a { color: var(--accent-2); }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 0 10px;
+  }
+  header .wordmark {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  header .wordmark b { color: var(--accent); }
+
+  .hero { padding: 36px 0 18px; }
+  .hero h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.08; margin-top: 10px; }
+  .hero p { font-size: 16px; max-width: 54ch; }
+
+  .gauge-row { display: flex; align-items: center; gap: 18px; margin: 22px 0 4px; }
+  .gauge-row svg { flex: none; }
+  .gauge-caption { font-size: 13px; color: var(--ink-soft); }
+  .gauge-caption b { color: var(--ink); }
+
+  section { padding: 34px 0; border-top: 1px solid var(--rule); }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+  }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .step .num {
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--accent);
+    font-size: 13px;
+  }
+  .step h3 { font-size: 16px; margin-top: 8px; }
+  .step p { font-size: 13.5px; margin-top: 6px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .price-panel { margin-top: 20px; }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+  .price-main .price { font-size: 44px; color: var(--accent); line-height: 1; }
+  .price-main .unit { font-size: 16px; color: var(--ink-soft); margin-left: 6px; }
+  .price-sub { text-align: right; }
+  .price-sub .was { color: var(--ink-soft); text-decoration: line-through; font-size: 18px; }
+  .price-sub .label { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+  .price-note { font-size: 13px; margin-top: 14px; border-top: 1px dashed var(--rule); padding-top: 14px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    border-radius: 6px;
+    padding: 13px 20px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--panel-border);
+  }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+  .fine { font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 26px 0 40px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <rect x="1" y="1" width="24" height="24" rx="5" stroke="var(--accent)" stroke-width="1.6"/>
+      <path d="M13 6 L13 14" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="13" cy="19" r="1.4" fill="var(--accent)"/>
+    </svg>
+    <div class="wordmark">Washer<b>Level</b></div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Датчик уровня омывающей жидкости · без врезки в бачок</div>
+    <h1>Бачок пуст. Грязь на лобовом. 110&nbsp;км/ч.</h1>
+    <p>Взмах дворников размазал грязь по стеклу, а Вы на трассе. Но это не про Вас — вы узнали о пустом бачке заранее — уведомлением в телефоне.</p>
+
+    <div class="gauge-row">
+      <svg width="86" height="56" viewBox="0 0 86 56">
+        <path d="M6 50 A37 37 0 0 1 80 50" fill="none" stroke="var(--track)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M6 50 A37 37 0 0 1 34 14" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="43" y1="50" x2="22" y2="23" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="43" cy="50" r="3.5" fill="var(--ink)"/>
+      </svg>
+      <div class="gauge-caption">Приложение показывает уровень в реальном времени и шлёт пуш, когда он падает ниже <b>15%</b> — пока вы ещё можете безопасно остановиться и долить омывайку.</div>
+    </div>
+  </div>
+
+  <section style="padding-top:0; border-top:none;">
+    <h2 style="font-size:20px;">Как это работает</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Клеится снаружи</h3>
+        <p>Без врезки в бачок и без разъёмов в проводку — на корпус бачка. 30 минут.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Следит за уровнем</h3>
+        <p>Автономный датчик по BLE передаёт уровень в приложение, пока телефон рядом с машиной.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Предупреждает заранее</h3>
+        <p>Низкий уровень — пуш-уведомление. Батарейки хватает на 3-5 лет.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 style="font-size:20px;">Цена предзапуска</h2>
+    <div class="panel price-panel">
+      <div class="price-row">
+        <div class="price-main">
+          <span class="price">150</span><span class="unit">BYN</span>
+        </div>
+        <div class="price-sub">
+          <div class="was mono">300 BYN</div>
+          <div class="label">ожидаемая розница после запуска</div>
+        </div>
+      </div>
+      <div class="price-note">
+        Цена действует для первой партии и для тех, кто резервирует место сейчас. Мест в первой партии немного — резерв ни к чему не обязывает, подтверждение оплаты будет отдельным сообщением перед отправкой.
+      </div>
+      <div class="cta-row">
+        <a class="btn" href="#" id="reserveBtn">Зарезервировать за 150 BYN</a>
+        <a class="btn secondary" href="#survey">Пройти опрос по цене</a>
+      </div>
+      <div class="fine" id="reserveFine">Кнопка откроет Telegram с готовым сообщением — отправьте его в чат <code>@enj_PaPoV</code></div>
+    </div>
+  </section>
+
+  <section id="survey">
+    <h2 style="font-size:20px;">Сколько это должно стоить, по-вашему?</h2>
+    <p>Четыре коротких вопроса про цену, без подсказок и вилок — впишите свою цифру в каждое поле, это займёт минуту. Ответы анонимны.</p>
+    <div class="panel" style="margin-top:20px; padding:0; overflow:hidden;">
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScrcTZXhvdnIioVKyvlQxiyFYUTVXKdz6EeSPfYsAAqMh2I4Q/viewform?embedded=true" width="100%" height="900" frameborder="0" marginheight="0" marginwidth="0" style="display:block;">Загрузка формы…</iframe>
+    </div>
+    <div class="fine">Если форма не загрузилась — <a href="https://forms.gle/TkAYqMkGwDheCKyh9" target="_blank" rel="noopener">откройте её в новой вкладке</a>.</div>
+  </section>
+
+  <footer>
+    <div>WasherLevel · прототип для проверки спроса</div>
+    <div>Цены — в белорусских рублях (BYN)</div>
+  </footer>
+
+</div>
+
+<script>
+  function openTelegramShare(text) {
+    const url = "https://t.me/share/url?url=&text=" + encodeURIComponent(text);
+    window.open(url, "_blank", "noopener");
+  }
+
+  document.getElementById("reserveBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    const msg = "Хочу зарезервировать WasherLevel по цене предзапуска 150 BYN. Город: ___";
+    openTelegramShare(msg);
+  });
+</script>
+</body>
+</html>
