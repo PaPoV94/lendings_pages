@@ -19,6 +19,8 @@
     --good: #2E7D4F;
     --bad: #B0421F;
     --track: #E7E2D4;
+    --logo-badge-bg: #14171C;
+    --logo-stroke: #FFC107;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -34,6 +36,8 @@
       --good: #58C487;
       --bad: #E27352;
       --track: #262B33;
+      --logo-badge-bg: #000000;
+      --logo-stroke: #FFC107;
     }
   }
   :root[data-theme="dark"] {
@@ -49,6 +53,8 @@
     --good: #58C487;
     --bad: #E27352;
     --track: #262B33;
+    --logo-badge-bg: #000000;
+    --logo-stroke: #FFC107;
   }
 
   * { box-sizing: border-box; }
@@ -194,11 +200,15 @@
 <div class="wrap">
 
   <header>
-    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-      <rect x="1" y="1" width="24" height="24" rx="5" stroke="var(--accent)" stroke-width="1.6"/>
-      <path d="M13 6 L13 14" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="13" cy="19" r="1.4" fill="var(--accent)"/>
-    </svg>
+    <div style="background:var(--logo-badge-bg); border-radius:7px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; flex:none;">
+      <svg width="22" height="22" viewBox="0 0 108 108" fill="none">
+        <path stroke="var(--logo-stroke)" stroke-width="6" stroke-linejoin="miter" d="M22,44 Q54,24 86,44 L74,88 L34,88 Z"/>
+        <path stroke="var(--logo-stroke)" stroke-width="5" stroke-linecap="butt" d="M20,28 L26,22 M26,18 L33,14 M36,12 L43,10 M46,9 L52,10"/>
+        <path stroke="var(--logo-stroke)" stroke-width="5" stroke-linecap="butt" d="M88,28 L82,22 M82,18 L75,14 M72,12 L65,10 M62,9 L56,10"/>
+        <path stroke="var(--logo-stroke)" stroke-width="5" stroke-linejoin="miter" stroke-linecap="butt" d="M36,64 L44,56 L50,68 L58,56 L64,68 L72,60"/>
+        <path stroke="var(--logo-stroke)" stroke-width="5" stroke-linecap="butt" d="M54,13 L54,20 M54,24 L54,30 M54,38 L54,46 M54,72 L54,78 M54,82 L54,87"/>
+      </svg>
+    </div>
     <div class="wordmark">Washer<b>Level</b></div>
   </header>
 
